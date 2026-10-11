@@ -42,7 +42,7 @@ if(await sha(pw)!==PWHASH){const c=app.firstChild;document.getElementById('err')
 localStorage.setItem('lolaPw',pw);start(pw)}}
 async function start(pw){try{Q=await decrypt(pw)}catch(e){localStorage.removeItem('lolaPw');return gate()}intro()}
 function intro(){app.innerHTML=`<div class="card"><h2>Ready?</h2><p>${Q.length} quick questions from Diana's guide, <i>Bringing Up Lola</i>. Tap your answer and you'll see right away if you got it.</p><p>No pressure, you can retake it as many times as you like! 😊</p><button class="primary" onclick="i=0;score=0;missed=[];show()">Start the quiz</button></div>`}
-function show(){const q=Q[i];app.innerHTML=`<div class="card"><div class="meta"><span>Question ${i+1} of ${Q.length}</span><span>⭐ ${score}</span></div>
+function show(){const o=Q[i];if(o.a.length>2&&!o._s){const ix=o.a.map((_,k)=>k).sort(()=>Math.random()-.5);o.a=ix.map(k=>o.a[k]);o.c=ix.indexOf(o.c)}const q=Q[i];app.innerHTML=`<div class="card"><div class="meta"><span>Question ${i+1} of ${Q.length}</span><span>⭐ ${score}</span></div>
 <div class="bar"><i style="width:${i/Q.length*100}%"></i></div><h2>${esc(q.q)}</h2><div id="opts">${q.a.map((a,j)=>`<button class="opt" data-j="${j}">${esc(a)}</button>`).join('')}</div><div id="fb"></div></div>`;
 document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(+b.dataset.j));window.scrollTo({top:0,behavior:'smooth'})}
 function answer(j){const q=Q[i],ok=j===q.c,bs=document.querySelectorAll('.opt');bs.forEach(b=>b.disabled=true);bs[q.c].classList.add('right');if(!ok){bs[j].classList.add('wrong');missed.push(q)}else score++;
@@ -52,6 +52,6 @@ function next(){i++;i<Q.length?show():end()}
 function end(){const p=score/Q.length,msg=p===1?'Perfect! Lola is in great hands! 🏆':p>=.8?'Wonderful job! 🌟':p>=.6?'Nice work! Just a few to review. 💛':'Good start! Give it another read and try again. 📖';
 app.innerHTML=`<div class="card"><h2 style="text-align:center">All done!</h2><p class="score">${score}/${Q.length}</p><p style="text-align:center;font-weight:700">${msg}</p>
 ${missed.length?'<h2>Ones to review</h2>'+missed.map(q=>`<div class="miss"><div><b>${esc(q.q)}</b></div><div class="ca">✓ ${esc(q.a[q.c])}</div><div>📖 ${esc(q.e)}</div></div>`).join(''):''}
-<button class="primary" style="margin-top:16px" onclick="i=0;score=0;missed=[];show()">Take it again</button></div>`;window.scrollTo({top:0,behavior:'smooth'})}
+<button class="primary" style="margin-top:16px" onclick="i=0;score=0;missed=[];Q.forEach(q=>q._s=0);show()">Take it again</button></div>`;window.scrollTo({top:0,behavior:'smooth'})}
 const saved=localStorage.getItem('lolaPw');saved?start(saved):gate();
 </script></body></html>
